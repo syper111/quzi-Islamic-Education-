@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>امتحان التربية الإسلامية</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+         :root {
+            --bg-color: #0a0a12;
+            --card-bg: #121220;
+            --neon-cyan: #00f3ff;
+            --neon-pink: #ff007f;
+            --neon-purple: #9d00ff;
+            --neon-green: #39ff14;
+            --text-color: #ffffff;
+            --text-dim: #a0a0c0;
+            --error-red: #ff3366;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Tajawal', sans-serif;
+        }
+        
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            background-image: radial-gradient(circle at 15% 15%, rgba(0, 243, 255, 0.08) 0%, transparent 40%), radial-gradient(circle at 85% 85%, rgba(255, 0, 127, 0.08) 0%, transparent 40%);
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 850px;
+            background: var(--card-bg);
+            border: 2px solid var(--neon-purple);
+            box-shadow: 0 0 25px rgba(157, 0, 255, 0.3), inset 0 0 15px rgba(157, 0, 255, 0.1);
+            border-radius: 20px;
+            padding: 35px;
+            position: relative;
+            overflow: hidden;
+        }
+        /* زر المعلم يظهر حصرياً في الصفحة الترحيبية */
+        
+        .teacher-btn {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            background: transparent;
+            border: 1px solid var(--neon-cyan);
+            color: var(--neon-cyan);
+            padding: 6px 15px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: 0.3s;
+            box-shadow: 0 0 8px rgba(0, 243, 255, 0.3);
+            z-index: 10;
+        }
+        
+        .teacher-btn:hover {
+            background: var(--neon-cyan);
+            color: #000;
+            box-shadow: 0 0 15px var(--neon-cyan);
+        }
+        
+        #welcome-screen {
+            text-align: center;
+            padding: 40px 10px;
+        }
+        
+        h1 {
+            color: var(--neon-cyan);
+            font-size: 2.2rem;
+            margin-bottom: 15px;
+            text-shadow: 0 0 10px var(--neon-cyan);
+        }
+        
+        .sub-title {
+            color: var(--text-dim);
+            margin-bottom: 30px;
+            font-size: 1.1rem;
+        }
+        
+        .input-group {
+            margin-bottom: 25px;
+        }
+        
+        .input-group label {
+            display: block;
+            margin-bottom: 10px;
+            color: var(--neon-pink);
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+        
+        .input-group input {
+            width: 80%;
+            max-width: 350px;
+            padding: 12px 20px;
+            background: #1a1a2e;
+            border: 2px solid var(--neon-purple);
+            border-radius: 10px;
+            color: #fff;
+            font-size: 1.1rem;
+            outline: none;
+            text-align: center;
+            transition: 0.3s;
+        }
+        
+        .input-group input:focus {
+            border-color: var(--neon-cyan);
+            box-shadow: 0 0 15px var(--neon-cyan);
+        }
+        
+        .btn-neon {
+            background: linear-gradient(45deg, var(--neon-purple), var(--neon-pink));
+            border: none;
+            color: #fff;
+            padding: 12px 40px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: 0.3s;
+            box-shadow: 0 0 15px rgba(255, 0, 127, 0.4);
+        }
+        
+        .btn-neon:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 25px var(--neon-pink);
+        }
+        
+        #exam-screen {
+            display: none;
+        }
+        
+        .exam-header {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 15px;
+            margin-bottom: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .student-info-tag {
+            color: var(--neon-cyan);
+            font-size: 1.1rem;
+            font-weight: bold;
+        }
+        
+        .exam-info-tag {
+            background: rgba(255, 0, 127, 0.2);
+            color: var(--neon-pink);
+            padding: 5px 12px;
+            border-radius: 15px;
+            border: 1px solid var(--neon-pink);
+            font-size: 0.9rem;
+        }
+        
+        .section-title {
+            color: var(--neon-cyan);
+            border-right: 4px solid var(--neon-cyan);
+            padding-right: 10px;
+            margin: 25px 0 15px 0;
+            font-size: 1.3rem;
+            text-shadow: 0 0 5px var(--neon-cyan);
+        }
+        
+        .question-card {
+            background: #18182a;
+            border: 1px solid #2a2a48;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            transition: 0.3s;
+        }
+        
+        .question-card.error-unanswered {
+            border: 2px solid var(--error-red) !important;
+            box-shadow: 0 0 15px var(--error-red) !important;
+            animation: pulse-red 1.5s infinite;
+        }
+        
+        @keyframes pulse-red {
+            0% {
+                box-shadow: 0 0 5px var(--error-red);
+            }
+            50% {
+                box-shadow: 0 0 20px var(--error-red);
+            }
+            100% {
+                box-shadow: 0 0 5px var(--error-red);
+            }
+        }
+        
+        .question-title {
+            font-size: 1.1rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #fff;
+            line-height: 1.6;
+        }
+        
+        .options-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .option-label {
+            display: flex;
+            align-items: center;
+            background: #202038;
+            padding: 10px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.2s;
+            border: 1px solid transparent;
+        }
+        
+        .option-label:hover {
+            background: #2a2a4a;
+            border-color: var(--neon-purple);
+        }
+        
+        .option-label input[type="radio"] {
+            margin-left: 12px;
+            accent-color: var(--neon-pink);
+            width: 18px;
+            height: 18px;
+        }
+        
+        #final-screen {
+            display: none;
+            text-align: center;
+            padding: 50px 20px;
+        }
+        
+        .success-icon {
+            font-size: 4rem;
+            color: var(--neon-green);
+            text-shadow: 0 0 20px var(--neon-green);
+            margin-bottom: 20px;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(5px);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        
+        .modal-content {
+            background: var(--card-bg);
+            border: 2px solid var(--neon-cyan);
+            border-radius: 15px;
+            padding: 25px;
+            width: 90%;
+            max-width: 750px;
+            max-height: 85vh;
+            overflow-y: auto;
+            box-shadow: 0 0 30px var(--neon-cyan);
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            margin-bottom: 15px;
+        }
+        
+        th,
+        td {
+            padding: 10px;
+            border: 1px solid #333;
+            text-align: center;
+        }
+        
+        th {
+            background: var(--neon-purple);
+            color: #fff;
+        }
+        
+        td {
+            background: #18182a;
+        }
+        
+        .dashboard-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 15px;
+        }
+        
+        .dash-btn {
+            background: #1a1a2e;
+            border: 1px solid var(--neon-cyan);
+            color: var(--neon-cyan);
+            padding: 8px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+        
+        .dash-btn:hover {
+            background: var(--neon-cyan);
+            color: #000;
+            box-shadow: 0 0 10px var(--neon-cyan);
+        }
+        
+        .dash-btn.danger {
+            border-color: var(--error-red);
+            color: var(--error-red);
+        }
+        
+        .dash-btn.danger:hover {
+            background: var(--error-red);
+            color: #fff;
+            box-shadow: 0 0 10px var(--error-red);
+        }
+        
+        .close-modal {
+            background: var(--neon-pink);
+            color: #fff;
+            border: none;
+            padding: 6px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    </style>
+
+    <!-- ربط Firebase Realtime Database -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyDlAF2SrTjnDkSzIoXV2NYqpBvaiFBAoUc",
+            authDomain: "sdgedrfgbdrf.firebaseapp.com",
+            databaseURL: "https://sdgedrfgbdrf-default-rtdb.firebaseio.com",
+            projectId: "sdgedrfgbdrf",
+            storageBucket: "sdgedrfgbdrf.firebasestorage.app",
+            messagingSenderId: "104456673240",
+            appId: "1:104456673240:web:b60d12e0102849975884ad",
+            measurementId: "G-S6L34KMQCL"
+        };
+
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        const database = firebase.database();
+
+        function saveToFirebase(record) {
+            database.ref('islamic_exam_results').push(record)
+                .catch(err => console.error("خطأ أثناء الحفظ:", err));
+        }
+
+        function getResultsFromFirebase(callback) {
+            database.ref('islamic_exam_results').once('value')
+                .then(snapshot => {
+                    const data = snapshot.val();
+                    let list = [];
+                    if (data) {
+                        list = Object.keys(data).map(key => ({
+                            id: key,
+                            ...data[key]
+                        }));
+                    }
+                    callback(list);
+                })
+                .catch(err => {
+                    console.error("خطأ في الجلب:", err);
+                    callback([]);
+                });
+        }
+
+        function clearFirebaseData(callback) {
+            database.ref('islamic_exam_results').remove()
+                .then(() => callback(true))
+                .catch(err => callback(false));
+        }
+    </script>
+</head>
+
+<body>
+
+    <div class="container">
+        <!-- زر لوحة المعلم يظهر فقط في الصفحة الترحيبية -->
+        <button id="teacher-main-btn" class="teacher-btn" onclick="openTeacherDashboard()">لوحة المعلم 🔒</button>
+
+        <div id="welcome-screen">
+            <h1>اختبار التربية الإسلامية</h1>
+            <p class="sub-title">الوحدة الأولى - الدروس (الأول، الثاني، الخامس، السادس)</p>
+
+            <div class="input-group">
+                <label for="student-name">الرجاء إدخال اسم الطالبة الثلاثي:</label>
+                <input type="text" id="student-name" placeholder="اكتبي اسمك هنا..." autocomplete="off">
+            </div>
+
+            <button class="btn-neon" onclick="startExam()">بدء الامتحان 🚀</button>
+        </div>
+
+        <div id="exam-screen">
+            <div class="exam-header">
+                <div class="student-info-tag">الطالبة: <span id="display-name"></span></div>
+                <div class="exam-info-tag">العلامة الكلية: 50 درجة</div>
+            </div>
+
+            <form id="quiz-form">
+                <div class="section-title">أولاً: أسئلة الاختيار من متعدد (15 سؤالاً)</div>
+                <div id="mcq-container"></div>
+
+                <div class="section-title">ثانياً: أسئلة الصواب والخطأ (5 أسئلة)</div>
+                <div id="tf-container"></div>
+
+                <div style="text-align: center; margin-top: 30px;">
+                    <button type="button" class="btn-neon" onclick="submitExam()">تسليم الإجابات 📤</button>
+                </div>
+            </form>
+        </div>
+
+        <div id="final-screen">
+            <div class="success-icon">✓</div>
+            <h2 style="color: var(--neon-green); text-shadow: 0 0 10px var(--neon-green); margin-bottom: 15px;">تم إرسال إجاباتك بنجاح!</h2>
+            <p style="color: var(--text-dim); font-size: 1.1rem;">شكراً لكِ. تم حفظ ورقة الإجابة في قاعدة البيانات بنجاح.</p>
+        </div>
+    </div>
+
+    <!-- لوحة المعلم Modal -->
+    <div class="modal" id="teacher-modal">
+        <div class="modal-content">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h3 style="color: var(--neon-cyan);">لوحة المعلم - سجل علامات الطالبات</h3>
+                <button class="close-modal" onclick="closeTeacherDashboard()">إغلاق ✖</button>
+            </div>
+
+            <table id="results-table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>اسم الطالبة</th>
+                        <th>العلامة (من 50)</th>
+                        <th>النسبة المئوية</th>
+                        <th>التاريخ والوقت</th>
+                    </tr>
+                </thead>
+                <tbody id="results-body">
+                    <tr>
+                        <td colspan="5">جاري التحميل...</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="dashboard-actions">
+                <button class="dash-btn" onclick="loadTeacherData()">🔄 تحديث البيانات</button>
+                <button class="dash-btn danger" onclick="deleteAllData()">🗑️ حذف جميع السجلات</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 15 سؤال اختيار من متعدد حسب الطلب
+        const mcqQuestions = [{
+            id: 'm1',
+            q: "1. الفرق بين المصحف والقرآن الكريم أن:",
+            options: ["القرآن الكريم هو المكتوب، والمصحف هو الكلام المنزّل.", "القرآن الكريم هو كلام الله المعجز المنزل بواسطة الوحي، والمصحف هو اسم لما كُتِب فيه.", "لا توجد أي فروق دلالية بينهما.", "المصحف هو التلاوة، والقرآن هو الأوراق المكتوبة."],
+            ans: 1
+        }, {
+            id: 'm2',
+            q: "2. نوع البيع الذي يتم فيه مبادلة سلعة بنقد يسمى في الفقه الإسلامي:",
+            options: ["المقايضة.", "الصرف.", "البيع المطلق.", "المرابحة."],
+            ans: 2
+        }, {
+            id: 'm3',
+            q: "3. المراد بـ (المقايضة) في معاملات البيع هو:",
+            options: ["مبادلة نقد بنقد.", "مبادلة سلعة بنقد.", "مبادلة سلعة بسلعة (مثل بيع سيارة بقطعة أرض).", "بيع المؤجل بالمعجل."],
+            ans: 2
+        }, {
+            id: 'm4',
+            q: "4. من آداب البيع التي ذكرها النبي ﷺ وبين أن الحلف فيها (منفقة للسلعة ممحقة للبركة) هو:",
+            options: ["الغش والخداع.", "الاحتكار.", "الحلف الكاذب أو المبالغ فيه.", "بيع المجهول."],
+            ans: 2
+        }, {
+            id: 'm5',
+            q: "5. حبس السلعة التي تشتد حاجة الناس إليها ليغلو سعرها يسمى شرعاً:",
+            options: ["السرقة.", "الاحتكار.", "الربا.", "الغش."],
+            ans: 1
+        }, {
+            id: 'm6',
+            q: "6. مفهوم (حق التملك) هو:",
+            options: ["حق الإنسان في حيازة الأموال والتصرف بها ضمن حدود الشرع والقانون.", "الاستيلاء على ممتلكات الغير دون وجه حق.", "بيع الأموال المحرمة للتجارة.", "هبة المال للجهات الخيرية فقط."],
+            ans: 0
+        }, {
+            id: 'm7',
+            q: "7. جميع ما يأتي يعد من أسباب التملك المشروع في الإسلام ما عدا:",
+            options: ["العمل.", "الربا.", "الإرث.", "الهبة."],
+            ans: 1
+        }, {
+            id: 'm8',
+            q: "8. تطبيق معاصر يتعلق بحق الشخص المخترع في ملكية اختراعه ومنع أي أحد من التصرف فيه إلا بإذنه يسمى:",
+            options: ["حق التأليف والنشر.", "حق العلامة التجارية.", "حق براءة الاختراع.", "حقوق الملكية العامة."],
+            ans: 2
+        }, {
+            id: 'm9',
+            q: "9. شكل العنف الذي يتمثل في (حرمان المرأة من الميراث أو منعها من التصرف في مالها) يُصنف على أنه:",
+            options: ["عنف جسدي.", "عنف نفسي.", "عنف اقتصادي.", "عنف لفظي."],
+            ans: 2
+        }, {
+            id: 'm10',
+            q: "10. التعريف الصحيح لـ (العنف ضد المرأة) هو:",
+            options: ["جميع أشكال الإيذاء والاستغلال التي تمارس ضد المرأة وتلحق بها ضرراً جسدياً أو نفسياً.", "منع المرأة من المشاركة في الحياة السياسية فقط.", "تفضيل الذكور على الإناث في التربية والتعليم.", "مطالبة المرأة بالعمل خارج المنزل."],
+            ans: 0
+        }, {
+            id: 'm11',
+            q: "11. الوسيلة التي تعين المسلم على تدبر آيات القرآن الكريم وفهمها هي:",
+            options: ["القراءة السريعة دون توقف.", "الرجوع إلى كتب التفسير والمتخصصين بعلوم القرآن الكريم.", "الاكتفاء بالاستماع عبر الأجهزة الذكية فقط.", "حفظ السور القصيرة دون دراسة معانيها."],
+            ans: 1
+        }, {
+            id: 'm12',
+            q: "12. من مظاهر تعظيم المصحف الشريف والتأدب معه:",
+            options: ["تركه مفتوحاً ومكشوفاً في أماكن الجلوس.", "الكتابة على صفحاته الفارغة لتسجيل الملاحظات.", "الطهارة قبل مسه والمحافظة عليه من التلف.", "وضعه على الأرض بجانب المصلي."],
+            ans: 2
+        }, {
+            id: 'm13',
+            q: "13. الحكم الشرعي لعقد البيع في الأصل هو:",
+            options: ["التحريم.", "الإباحة.", "الكراهة.", "الوجوب."],
+            ans: 1
+        }, {
+            id: 'm14',
+            q: "14. من الجهود التي تقوم بها وزارة الأوقاف والشؤون والمقدسات الإسلامية في الأردن لخدمة القرآن الكريم:",
+            options: ["المسابقة الهاشمية السنوية وطباعة المصحف الهاشمي.", "إصدار قوانين حماية الأسرة.", "تأسيس إدارة حماية الأسرة.", "إنشاء مؤسسة آل البيت الملكية."],
+            ans: 0
+        }, {
+            id: 'm15',
+            q: "15. الحديث الشريف الذي يبيّن فضل ماهر القرآن والذي يتتعتع فيه هو برواية أم المؤمنين:",
+            options: ["خديجة بنت خويلد رضي الله عنها.", "عائشة رضي الله عنها.", "حفصة رضي الله عنها.", "أم سلمة رضي الله عنها."],
+            ans: 1
+        }];
+
+        // 5 أسئلة صواب وخطأ حسب الطلب
+        const tfQuestions = [{
+            id: 't1',
+            q: "1. الأصل في العقود والمعاملات الإباحة، ولا يحرم منها إلا ما حرمه الشرع بنص صريح.",
+            ans: "true"
+        }, {
+            id: 't2',
+            q: "2. يُشترط لصحة عقد البيع أن يكون البائع والمشتري مكرهين على إتمام الصفقة لضمان الجدية.",
+            ans: "false"
+        }, {
+            id: 't3',
+            q: "3. أقر الإسلام ذمة مالية مستقلة للمرأة ومنحها حق التملك والبيع والشراء بشكل مستقل.",
+            ans: "true"
+        }, {
+            id: 't4',
+            q: "4. التبرع بالدم أو بيع الأعضاء المحرمة يدخل ضمن أسباب التملك غير المشروع كالسرقة والربا.",
+            ans: "false"
+        }, {
+            id: 't5',
+            q: "5. من الآثار المترتبة على عقد البيع الصحيح انتقال ملكية السلعة للمشتري وملكية الثمن للبائع.",
+            ans: "true"
+        }];
+
+        let studentName = "";
+
+        function renderExam() {
+            const mcqContainer = document.getElementById('mcq-container');
+            let mcqHTML = "";
+            mcqQuestions.forEach((q) => {
+                        mcqHTML += `
+                    <div class="question-card" id="card-${q.id}">
+                        <div class="question-title">${q.q}</div>
+                        <div class="options-container">
+                            ${q.options.map((opt, oIdx) => `
+                                <label class="option-label">
+                                    <input type="radio" name="${q.id}" value="${oIdx}">
+                                    ${opt}
+                                </label>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            });
+            mcqContainer.innerHTML = mcqHTML;
+
+            const tfContainer = document.getElementById('tf-container');
+            let tfHTML = "";
+            tfQuestions.forEach((q) => {
+                tfHTML += `
+                    <div class="question-card" id="card-${q.id}">
+                        <div class="question-title">${q.q}</div>
+                        <div class="options-container" style="flex-direction: row; gap: 20px;">
+                            <label class="option-label" style="flex: 1;">
+                                <input type="radio" name="${q.id}" value="true"> صواب (✓)
+                            </label>
+                            <label class="option-label" style="flex: 1;">
+                                <input type="radio" name="${q.id}" value="false"> خطأ (✗)
+                            </label>
+                        </div>
+                    </div>
+                `;
+            });
+            tfContainer.innerHTML = tfHTML;
+        }
+
+        function startExam() {
+            const nameInput = document.getElementById('student-name');
+            if (nameInput.value.trim() === "") {
+                nameInput.style.borderColor = "var(--error-red)";
+                nameInput.focus();
+                return;
+            }
+            studentName = nameInput.value.trim();
+            document.getElementById('display-name').innerText = studentName;
+            
+            document.getElementById('teacher-main-btn').style.display = 'none';
+
+            document.getElementById('welcome-screen').style.display = 'none';
+            document.getElementById('exam-screen').style.display = 'block';
+            window.scrollTo(0, 0);
+        }
+
+        function submitExam() {
+            document.querySelectorAll('.question-card').forEach(card => card.classList.remove('error-unanswered'));
+
+            let unansweredCard = null;
+
+            for (let q of mcqQuestions) {
+                const selected = document.querySelector(`input[name="${q.id}"]:checked`);
+                if (!selected) {
+                    unansweredCard = document.getElementById(`card-${q.id}`);
+                    break;
+                }
+            }
+
+            if (!unansweredCard) {
+                for (let q of tfQuestions) {
+                    const selected = document.querySelector(`input[name="${q.id}"]:checked`);
+                    if (!selected) {
+                        unansweredCard = document.getElementById(`card-${q.id}`);
+                        break;
+                    }
+                }
+            }
+
+            // الرجوع التلقائي وتأطير السؤال بالأحمر بدون رسائل متصفح
+            if (unansweredCard) {
+                unansweredCard.classList.add('error-unanswered');
+                unansweredCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                return;
+            }
+
+            // توزيع الدرجات (من 50 علامة):
+            // 15 سؤال اختيار متعدد (كل سؤال 2.8 علامة تقريباً = 42 علامة)
+            // 5 أسئلة صواب وخطأ (كل سؤال 1.6 علامة = 8 علامات) -> لتصبح الدقة ممتازة والمجموع 50
+            let scoreMCQ = 0;
+            mcqQuestions.forEach(q => {
+                const val = document.querySelector(`input[name="${q.id}"]:checked`).value;
+                if (parseInt(val) === q.ans) {
+                    scoreMCQ += 42 / 15; 
+                }
+            });
+
+            let scoreTF = 0;
+            tfQuestions.forEach(q => {
+                const val = document.querySelector(`input[name="${q.id}"]:checked`).value;
+                if (val === q.ans) {
+                    scoreTF += 8 / 5; 
+                }
+            });
+
+            let totalScore = Math.round(scoreMCQ + scoreTF);
+            if (totalScore > 50) totalScore = 50;
+
+            const record = {
+                name: studentName,
+                score: totalScore,
+                percentage: ((totalScore / 50) * 100).toFixed(1) + "%",
+                date: new Date().toLocaleString('ar-JO')
+            };
+
+            saveToFirebase(record);
+
+            document.getElementById('exam-screen').style.display = 'none';
+            document.getElementById('final-screen').style.display = 'block';
+            window.scrollTo(0, 0);
+        }
+
+        function openTeacherDashboard() {
+            const pass = prompt("الرجاء إدخال رمز دخول لوحة المعلم:");
+            if (pass === "8000") {
+                document.getElementById('teacher-modal').style.display = 'flex';
+                loadTeacherData();
+            } else if (pass !== null) {
+                alert("رمز الدخول غير صحيح!");
+            }
+        }
+
+        function closeTeacherDashboard() {
+            document.getElementById('teacher-modal').style.display = 'none';
+        }
+
+        function loadTeacherData() {
+            const tbody = document.getElementById('results-body');
+            tbody.innerHTML = `<tr><td colspan="5">جاري جلب النتائج من قاعدة البيانات...</td></tr>`;
+
+            getResultsFromFirebase((results) => {
+                if (results.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="5">لا توجد نتائج مسجلة حتى الآن.</td></tr>`;
+                    return;
+                }
+
+                tbody.innerHTML = results.map((r, i) => `
+                    <tr>
+                        <td>${i + 1}</td>
+                        <td>${r.name}</td>
+                        <td style="color: var(--neon-cyan); font-weight: bold;">${r.score} / 50</td>
+                        <td>${r.percentage}</td>
+                        <td>${r.date}</td>
+                    </tr>
+                `).join('');
+            });
+        }
+
+        function deleteAllData() {
+            if (confirm("هل أنت متأكد من رغبتك في حذف جميع سجلات الطالبات نهائياً؟")) {
+                clearFirebaseData((success) => {
+                    if (success) {
+                        loadTeacherData();
+                    } else {
+                        alert("حدث خطأ أثناء الحذف.");
+                    }
+                });
+            }
+        }
+
+        window.onload = renderExam;
+    </script>
+</body>
+
+</html>
