@@ -48,7 +48,6 @@
             position: relative;
             overflow: hidden;
         }
-        /* زر المعلم يظهر حصرياً في الصفحة الترحيبية */
         
         .teacher-btn {
             position: absolute;
@@ -477,7 +476,6 @@
     </div>
 
     <script>
-        // 15 سؤال اختيار من متعدد حسب الطلب
         const mcqQuestions = [{
             id: 'm1',
             q: "1. الفرق بين المصحف والقرآن الكريم أن:",
@@ -495,8 +493,8 @@
             ans: 2
         }, {
             id: 'm4',
-            q: "4. من آداب البيع التي ذكرها النبي ﷺ وبين أن الحلف فيها (منفقة للسلعة ممحقة للبركة) هو:",
-            options: ["الغش والخداع.", "الاحتكار.", "الحلف الكاذب أو المبالغ فيه.", "بيع المجهول."],
+            q: "4. من آداب البيع التي ذكرها النبي ﷺ وبين أن سبب في نزق البركة رغم حصول المشتري هو:",
+            options: ["الغش والخداع.", "الاحتكار.", "الحلف (الحلف منفققة للسلعة ممحقة للبركة).", "بيع المجهول."],
             ans: 2
         }, {
             id: 'm5',
@@ -555,7 +553,6 @@
             ans: 1
         }];
 
-        // 5 أسئلة صواب وخطأ حسب الطلب
         const tfQuestions = [{
             id: 't1',
             q: "1. الأصل في العقود والمعاملات الإباحة، ولا يحرم منها إلا ما حرمه الشرع بنص صريح.",
@@ -660,33 +657,31 @@
                 }
             }
 
-            // الرجوع التلقائي وتأطير السؤال بالأحمر بدون رسائل متصفح
             if (unansweredCard) {
                 unansweredCard.classList.add('error-unanswered');
                 unansweredCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 return;
             }
 
-            // توزيع الدرجات (من 50 علامة):
-            // 15 سؤال اختيار متعدد (كل سؤال 2.8 علامة تقريباً = 42 علامة)
-            // 5 أسئلة صواب وخطأ (كل سؤال 1.6 علامة = 8 علامات) -> لتصبح الدقة ممتازة والمجموع 50
-            let scoreMCQ = 0;
+            // التصحيح الدقيق 100% (كل سؤال اختيار متعدد = 3 علامات بإجمالي 45، وكل سؤال صح وخطأ = 1 علامة بإجمالي 5، المجموع الدقيق 50)
+            let correctCountMCQ = 0;
             mcqQuestions.forEach(q => {
                 const val = document.querySelector(`input[name="${q.id}"]:checked`).value;
                 if (parseInt(val) === q.ans) {
-                    scoreMCQ += 42 / 15; 
+                    correctCountMCQ++;
                 }
             });
 
-            let scoreTF = 0;
+            let correctCountTF = 0;
             tfQuestions.forEach(q => {
                 const val = document.querySelector(`input[name="${q.id}"]:checked`).value;
                 if (val === q.ans) {
-                    scoreTF += 8 / 5; 
+                    correctCountTF++;
                 }
             });
 
-            let totalScore = Math.round(scoreMCQ + scoreTF);
+            // وزن دقيق: 15 سؤال متعدد × 3 علامات = 45 علامة | 5 أسئلة صواب وخطأ × 1 علامة = 5 علامات (المجموع 50 تماماً)
+            let totalScore = (correctCountMCQ * 3) + (correctCountTF * 1);
             if (totalScore > 50) totalScore = 50;
 
             const record = {
